@@ -35,4 +35,10 @@ def test_getStudentLevel(getStudentLevel_math_file,request_header):
         }
         response = requests.post(url=get_studentlevel_url_old, data=json.dumps(data), headers=request_header)
         re = json.loads(response.text)
+        strout = []
+        strout.append({
+            "request_data": data,
+            "request_response": re
+        })
+        pprint(strout)
         assert re.get("code") == 200

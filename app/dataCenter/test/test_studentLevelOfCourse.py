@@ -1,6 +1,7 @@
 import json
-from pprint import pprint
 import random
+from pprint import pprint
+
 import requests
 
 from dataCenter.config.conf import studentLevelOfCourse_url
@@ -27,4 +28,10 @@ def test_studentLevelOfCourse(studentLevelOfCourse_file,request_header):
                          headers = request_header
                          )
         res = json.loads(response.text)
+        strout = []
+        strout.append({
+            "request_data": data,
+            "request_response": res
+        })
+        pprint(strout)
         assert res.get("code") == 200

@@ -1,12 +1,3 @@
-'''
-
-allure 使用文档
-https://cloud.tencent.com/developer/article/1516907
-
-    pytest --alluredir=./allure-results/
-    allure generate allure-results -o allure-reports/ --clean
-'''
-
 import os
 
 get_studentlevel_url_old = 'http://algo-irs-data.k8s.pre.internal.classba.cn/v1/student/getStudentLevel'

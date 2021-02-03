@@ -1,3 +1,4 @@
+from pprint import pprint
 import random
 import json
 import requests
@@ -20,7 +21,12 @@ def test_getloname(getLoName_file,request_header):
                 "requestId":"666666",
                 "loCodes": list_[:u] #list_[:u]
             }
-
             response = requests.post(url=getloname_url, data=json.dumps(data), headers=request_header)
             re = json.loads(response.text)
+            strout = []
+            strout.append({
+                "request_data" :data,
+                "request_response" : re
+            })
+            pprint(strout)
             assert re.get("code") == 200

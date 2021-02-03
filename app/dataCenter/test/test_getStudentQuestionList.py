@@ -1,8 +1,11 @@
 import json
 import random
+from pprint import pprint
+
 import requests
 
 from dataCenter.config.conf import getStudentQuestionList_url
+
 
 def test_getStudentQuestionList(getStudentQuestionList_file,request_header):
     getStudentQuestionList_files = []
@@ -33,4 +36,10 @@ def test_getStudentQuestionList(getStudentQuestionList_file,request_header):
         }
         response = requests.post(url=getStudentQuestionList_url, data=json.dumps(data), headers=request_header)
         re = json.loads(response.text)
+        strout = []
+        strout.append({
+            "request_data": data,
+            "request_response": re
+        })
+        pprint(strout)
         assert re.get("code") == 200

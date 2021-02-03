@@ -1,5 +1,6 @@
 import json
 import re
+from pprint import pprint
 import random
 
 import requests
@@ -56,4 +57,10 @@ def test_getStudentLoStudyCost(getStudentLoStudyCost_file,request_header):
                 }
                 response = requests.post(url=getStudentLoStudyCost_url, data=json.dumps(data), headers=request_header)
                 res = json.loads(response.text)
+                strout = []
+                strout.append({
+                    "request_data": data,
+                    "request_response": res
+                })
+                pprint(strout)
                 assert res.get("code") == 200
