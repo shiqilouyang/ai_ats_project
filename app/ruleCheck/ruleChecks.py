@@ -69,15 +69,23 @@ class RuleChecks():
             models_[self.user_id[-1]].user_id == self.user_id) \
             .filter(models_[self.user_id[-1]].session_id == self.session_id) \
             .filter(models_[self.user_id[-1]].curPoolCode != models_[self.user_id[-1]].prePoolCode).all()
-
-        id__filters = models_[self.user_id[-1]].query.filter(
-            models_[self.user_id[-1]].user_id == self.user_id) \
-            .filter(models_[self.user_id[-1]].session_id == self.session_id) \
-            .filter(models_[self.user_id[-1]].curlocode != models_[self.user_id[-1]].preLoCode) \
-            .filter(models_[self.user_id[-1]].curPoolCode == models_[self.user_id[-1]].prePoolCode) \
-            .filter(models_[self.user_id[-1]].curPoolCode == 'RESTUDY_MODULE') \
-            .all()
-        # 模块切换 + 重学模块之中上一个知识点不等于这一个知识点
+        # 物理化学 按照 LO 视频切分
+        if '物理' in self.season_subject__first.academicSeason_subject or \
+                '化学' in self.season_subject__first.academicSeason_subject:
+            id__filters = models_[self.user_id[-1]].query.filter(
+                models_[self.user_id[-1]].user_id == self.user_id) \
+                .filter(models_[self.user_id[-1]].session_id == self.session_id) \
+                .filter(models_[self.user_id[-1]].usage == 'LO') \
+                .all()
+        else:
+            id__filters = models_[self.user_id[-1]].query.filter(
+                models_[self.user_id[-1]].user_id == self.user_id) \
+                .filter(models_[self.user_id[-1]].session_id == self.session_id) \
+                .filter(models_[self.user_id[-1]].curlocode != models_[self.user_id[-1]].preLoCode) \
+                .filter(models_[self.user_id[-1]].curPoolCode == models_[self.user_id[-1]].prePoolCode) \
+                .filter(models_[self.user_id[-1]].curPoolCode == 'RESTUDY_MODULE') \
+                .all()
+        # 模块切换 与 上一个知识点 不等于这一个知识点
         id__filter = id__filter + id__filters
         data = {}
         h = []
