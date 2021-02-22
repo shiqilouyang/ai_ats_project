@@ -21,10 +21,9 @@ import subprocess
 if __name__ == '__main__':
     ''' 测试实例启动脚本  '''
     dataCents_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
-    environment_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "environment.xml")
-    allure_results_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "allure-results")
-    allure_reports_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "allure-reports")
-    print(dataCents_path)
+    environment_path = os.path.join(dataCents_path, "environment.xml")
+    allure_results_path = os.path.join(dataCents_path, "allure-results")
+    allure_reports_path = os.path.join(dataCents_path, "allure-reports")
     cmds = [
         "cd {} & pytest".format(dataCents_path),
         'copy {} {}'.format(environment_path,allure_results_path),
