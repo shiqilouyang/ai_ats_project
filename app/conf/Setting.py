@@ -12,13 +12,13 @@ rand = random.randint(0, 9999999)
 rand11 = random.randint(60, 240)
 rand12 = random.randint(0, 1)
 
-execl_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "execl","{}.csv")
-classes_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "conf","classes")
-conf_init_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "conf","__init__.py")
-utils_init_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "utils","__init__.py".format(1))
-html_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "templates","{}.html")
-log_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "log","{}.log")
-
+app_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+execl_path = os.path.join(app_path, "execl\{}.csv")
+classes_path = os.path.join(app_path, "conf\classes")
+conf_init_path = os.path.join(app_path, "conf\__init__.py")
+utils_init_path = os.path.join(app_path, "utils\__init__.py".format(1))
+html_path = os.path.join(app_path, "templates\{}.html")
+log_path = os.path.join(app_path, "log\{}.log")
 #生产环境
 UNlockProdUrl = "http://algo-ale-server.k8s.prod.internal.classba.cn/unlock/v1/recom/unlock"
 GetSessionProdUrl = "http://algo-ale-server.k8s.prod.internal.classba.cn/session/v1/recom/getSession"
