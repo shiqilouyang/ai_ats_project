@@ -1,78 +1,62 @@
+'''
+
+   userId 在 operationtableTester 之中, 当前时间的前12小时
+
+'''
+
+
 import asyncio
 import aiomysql
 import time
-import MySQLdb
-
-from utils.loger_ import SetLog
+import datetime
 
 
-loger = SetLog("abilitySqlCheck")
+# "autoTest-xfl-4684-" + str(int(round(time.time())))
+from TestPoolModel.model import OperationtableTester
+operationtableTester_query_all_userId_list = []
+operationtableTester_query_all = OperationtableTester.query.all()
+for i in operationtableTester_query_all:
+	operationtableTester_query_all_userId_list.append(i.user_id)
 
-def get_data_from_test( ):
+operationtableTester_query_all_userId_list = list(set(operationtableTester_query_all_userId_list))
 
-	sql = '''select distinct user_id from operation_table_tester ;'''
-
-	# 打开数据库连接
-	# 测试数据库
-	db = MySQLdb.connect("10.31.210.18", "db_admin", "Projectx@2017", "sc_normal_center", charset='utf8')
-
-	cursor = db.cursor()
-
-	cursor.execute(sql)
-
-	data = cursor.fetchall()
-	list_user = []
-	for i in data:
-		list_user += list(i)
-	db.close()
-	list_user_ = []
-	for i in list_user:
-		a = i[0:28]
-		list_user_.append(a)
-	list_user_ = list(set(list_user_))
-	return list_user_
+t=datetime.datetime.now()
+#12小时前
+t2=(t-datetime.timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
+#12 小时之前的时间戳
+ts2=time.mktime(time.strptime(t2, '%Y-%m-%d %H:%M:%S'))
 
 
-async def check_data_from_prod():
+operationtableTester_query_all_userId_list_ = []
+for i in operationtableTester_query_all_userId_list:
+	if ts2 < float(i[18:28] + '0'):
+		operationtableTester_query_all_userId_list_.append(i)
 
-	user_id = get_data_from_test()
-	# 生产数据库
-	conn = await aiomysql.connect(host="10.30.31.245", port=3306,
-								  user='db_read', password='Yixuedb@2018',
+
+async def basic_test(user_id):
+	conn = await aiomysql.connect(host="106.14.214.32", port=3306,
+								  user='db_admin', password='hello@2017',
 								  db='sc_normal_math', charset='utf8')
 	cursor = await conn.cursor()
 
-	#  TODO 每次使用 检查 userId 根据 user_id 进行调整 u[0:28]
 	for i in range(16):
 		table_name = 'ale_lo_status_{}'.format(i)
-		for u in user_id:
-			sql = '''select module_code,user_id,session_id,
-				lo_code,lo_status,lo_reason,finally_ability,create_time from
-			  {} where  user_id like "{}%" and module_code = 'TEST_MODULE' 
-			  and DATEDIFF(create_time,NOW())=0  and 
-			  ((lo_status = "PASSED" and finally_ability < 0.7) 
-			  or (lo_status = "FAILED" and finally_ability >= 0.7));'''.format(
-				table_name, u[0:28])
-			try:
-				s = await cursor.execute(sql)
-				result = await cursor.fetchall()
-				if len(result) != 0:
-					loger.error(result)
-					assert len(result) == 0
-			except Exception as e:
-				print('执行Mysql: %s 时出错：%s' % (sql, e))
+		sql = '''select * from  {} where  user_id like "{}%" and module_code = 'TEST_MODULE'  and ((lo_status = "PASSED" and finally_ability < 0.7) or (lo_status = "FAILED" and finally_ability >= 0.7));'''.format(
+			table_name, user_id[:28] + '0')
+		try:
+			s = await cursor.execute(sql)
+			print("OK")
+			result = await cursor.fetchall()
+			assert len(result) == 0
+		except Exception as e:
+			print('执行Mysql: %s 时出错：%s' % (sql, e))
 	await cursor.close()
 	conn.close()
 
-
-
-num = 1
 while 1:
-	time.sleep(2)
-	print("------------开始全局扫描第{}次---------".format(num))
+	time.sleep(1)
 	loop = asyncio.get_event_loop()
-	loop.run_until_complete(check_data_from_prod())
-	print("--------------全局扫描第{}次over---------".format(num))
-	num +=1
-
-
+	if operationtableTester_query_all_userId_list_ != []:
+		loop.run_until_complete(asyncio.gather(*(basic_test(str(g)) for g in operationtableTester_query_all_userId_list_)))
+	else:
+		print("没有找到 userID")
